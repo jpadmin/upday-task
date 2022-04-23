@@ -1,0 +1,49 @@
+pipeline {
+  parameters {
+    string(name: 'docker_agent', description: 'Jenkins Build agent with docker utility installed')
+    string(name: 'docker_url', description: 'Docker registry URL')
+    string(name: 'docker_organisation_name', description: 'Docker organisation name under which repo is created')
+    string(name: 'docker_credential_name', description: 'Save docker registry logins in the jenkins credentials and provide the name of jenkins credential here')
+    string(name: 'docker_repo_name', description: 'Docker repository name used to save the docker image')
+  }
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '7', artifactNumToKeepStr: '7'))
+  }  
+  environment {
+    JENKINS_ROOT="upday-app/jenkins-job"
+  }
+  agent {
+    node {
+      label 'DOCKER_HOST'
+    }
+  }
+  stages {
+    stage("Build Image") {
+      steps {
+        sh '''
+          cd ${JENKINS_ROOT}            
+          docker build . -t ${docker_url}/${docker_organisation_name}/${docker_repo_name}:latest
+        '''
+      }
+    }
+    stage("Push Image") {
+      steps {
+        script {
+            docker.withRegistry("${docker_url}", "${docker_credential_name}") {
+            sh '''
+              docker push ${docker_url}/${docker_organisation_name}/${docker_repo_name}:latest
+            '''
+          }
+        }
+      }
+    }
+  }
+  post {
+    always {
+      echo "Info: Delete local images"
+      sh '''  
+        docker rmi ${docker_url}/${docker_organisation_name}/${docker_repo_name}:latest
+      '''
+    }
+  }
+}
