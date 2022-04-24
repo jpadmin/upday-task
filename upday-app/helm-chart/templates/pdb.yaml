@@ -1,4 +1,4 @@
-{{- if gt (.Values.replicaCount | int) 2 }}
+{{- if or (and (eq .Values.autoscaling.enabled false) (gt (.Values.replicaCount | int) 2)) (and (eq .Values.autoscaling.enabled true) (gt (.Values.autoscaling.minReplicas | int) 2)) }}
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
