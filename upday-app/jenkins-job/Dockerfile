@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/java/jre-headless:11-zulu-alpine
 
 USER root
 
-RUN adduser application --home /home/application/ --disabled-password
+RUN adduser application --home /home/application/ --disabled-password --uid 1824
 
 USER application
 
