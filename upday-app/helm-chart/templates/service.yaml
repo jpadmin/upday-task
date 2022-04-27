@@ -7,13 +7,13 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.service.httpPort }}
       targetPort: http
       protocol: TCP
       name: http
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.service.httpsPort }}
       targetPort: http
       protocol: TCP
-      name: http
+      name: https
   selector:
     {{- include "upday-app.selectorLabels" . | nindent 4 }}

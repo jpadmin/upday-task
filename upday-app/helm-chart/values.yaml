@@ -48,6 +48,18 @@ autoscaling:
 
 nodeSelector: {}
 
-tolerations: []
+tolerations:
+  - effect: NoSchedule
+    key: servertype
+    operator: Equal
+    value: upday
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: node.kubernetes.io/approle
+          operator: In
+          values:
+          - upday

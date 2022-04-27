@@ -19,7 +19,7 @@ module "eks" {
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
       asg_desired_capacity          = 1
       root_volume_size              = "50"
-      kubelet_extra_args            = "--node-labels=node.kubernetes.io/approle=upday"
+      kubelet_extra_args            = "--node-labels=node.kubernetes.io/approle=upday --register-with-taints=servertype=upday:NoSchedule"
     },
     {
       name                          = "worker-group-2"
@@ -28,7 +28,7 @@ module "eks" {
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
       asg_desired_capacity          = 1
       root_volume_size              = "50"
-      kubelet_extra_args            = "--node-labels=node.kubernetes.io/approle=upday"
+      kubelet_extra_args            = "--node-labels=node.kubernetes.io/approle=upday --register-with-taints=servertype=upday:NoSchedule"
     },
   ]
 }
