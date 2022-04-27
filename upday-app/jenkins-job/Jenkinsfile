@@ -14,7 +14,7 @@ pipeline {
   }
   agent {
     node {
-      label 'DOCKER_HOST'
+      label '$(docker_agent)'
     }
   }
   stages {

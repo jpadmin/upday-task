@@ -18,6 +18,8 @@ module "eks" {
       additional_userdata           = "echo foo bar"
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
       asg_desired_capacity          = 1
+      asg_min_size                  = 1
+      asg_max_size                  = 3
       root_volume_size              = "50"
       kubelet_extra_args            = "--node-labels=node.kubernetes.io/approle=upday --register-with-taints=servertype=upday:NoSchedule"
     },
@@ -27,6 +29,8 @@ module "eks" {
       additional_userdata           = "echo foo bar"
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
       asg_desired_capacity          = 1
+      asg_min_size                  = 1
+      asg_max_size                  = 3
       root_volume_size              = "50"
       kubelet_extra_args            = "--node-labels=node.kubernetes.io/approle=upday --register-with-taints=servertype=upday:NoSchedule"
     },
