@@ -145,7 +145,7 @@ string(name: 'docker_repo_name', description: 'Docker repository name used to sa
  cd upday-task/upday-app/helm-chart
  ~~~
 
- - Review the **values.yaml** and update the image section with the name of the docker image created from jenkins-job if necessary. Right now I have created a docker image in docker hub with the name **jpadmin/upday-app**.
+ - Review the **values.yaml** and update the image section with the name of the docker image created from jenkins-job if necessary. Right now I have created a docker image in docker hub with the name **jpadmin/upday-app** and configured it in there. Also you need to replace value for the service.beta.kubernetes.io/aws-load-balancer-ssl-cert with arn of the SSL certificate you wanted to use for the application URL. 
 
  - Package your helm chart for deployment using the below command.
  ~~~
@@ -163,8 +163,6 @@ string(name: 'docker_repo_name', description: 'Docker repository name used to sa
  ~~~
  kubectl get svc spring-boot-upday-app -o json | jq -r ".status.loadBalancer.ingress[0].hostname"
  ~~~
-
- - Finally if you need to configure SSL certs from your ELB, please login to AWS console - *EC2 > Load Balancers > ELB Name(obtained above) > Listeners > 443* and add the SSL certificate and set cname for your domain to ELB endpoint name.
 
  ## Live Test and URL
 
@@ -187,21 +185,27 @@ TEST SUITE: None
 
 $ # Getting the AWS ELB endpoint for the app
 $ kubectl get svc spring-boot-upday-app -o json | jq -r ".status.loadBalancer.ingress[0].hostname"
-a921141d796ca4c38b093d4210d0d1ca-985246301.us-east-1.elb.amazonaws.com
+ab0f89e050ba34b21bd91e89edb3e982-465562442.us-east-1.elb.amazonaws.com
 
 $ # Now I wait for sometime until my application pods are in ready state
+$ kubectl get po -w
+NAME                                     READY   STATUS    RESTARTS   AGE
+spring-boot-upday-app-7c788f7c5d-52rxn   0/1     Running   0          45s
+spring-boot-upday-app-7c788f7c5d-qh8lx   0/1     Running   0          60s
+spring-boot-upday-app-7c788f7c5d-wc52m   0/1     Running   0          45s
+
 $ # Calling the app url and it works fine
-$ curl -i http://a921141d796ca4c38b093d4210d0d1ca-985246301.us-east-1.elb.amazonaws.com
+$ curl -i http://ab0f89e050ba34b21bd91e89edb3e982-465562442.us-east-1.elb.amazonaws.com
 HTTP/1.1 200 OK
 Content-Type: text/plain;charset=UTF-8
 Content-Length: 23
 
 Hello World from upday!
 
-$ # To check the SSL connection, I generated self signed certificate and logged into EC2 console and uploaded it to the 443 listener and changed the protocol from TCP to HTTPs.
-$ # calling the app url using https and with k flag for it is self signed
 
-$ curl -ki https://a921141d796ca4c38b093d4210d0d1ca-985246301.us-east-1.elb.amazonaws.com
+$ # Calling the app url using https and with k flag for it is self signed
+
+$ curl -ki https://ab0f89e050ba34b21bd91e89edb3e982-465562442.us-east-1.elb.amazonaws.com
 HTTP/1.1 200 OK
 Content-Type: text/plain;charset=UTF-8
 Content-Length: 23
